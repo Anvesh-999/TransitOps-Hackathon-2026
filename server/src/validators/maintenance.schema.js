@@ -5,7 +5,7 @@ const maintenanceCreateSchema = z.object({
   vehicleId: z.string().min(1, 'Vehicle is required'),
   type: z.enum(MAINTENANCE_TYPES, { errorMap: () => ({ message: `Type must be one of: ${MAINTENANCE_TYPES.join(', ')}` }) }),
   description: z.string().min(1, 'Description is required'),
-  cost: z.number().min(0, 'Cost cannot be negative'),
+  cost: z.coerce.number().min(0, 'Cost cannot be negative'),
   startDate: z.string().datetime({ offset: true }).or(z.string().date()),
   expectedEndDate: z.string().datetime({ offset: true }).or(z.string().date()),
 });

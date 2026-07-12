@@ -6,8 +6,13 @@ const driverCreateSchema = z.object({
   licenseNumber: z.string().min(1, 'License number is required'),
   licenseCategory: z.enum(LICENSE_CATEGORIES, { errorMap: () => ({ message: `License category must be one of: ${LICENSE_CATEGORIES.join(', ')}` }) }),
   licenseExpiryDate: z.string().datetime({ offset: true }).or(z.string().date()),
-  contactNumber: z.string().regex(/^\d{10,15}$/, 'Contact number must be 10-15 digits'),
-  safetyScore: z.number().min(0).max(100).default(100),
+  contactNumber: z
+    .string()
+    .transform((val) => val.replace(/\D/g, ''))
+    .refine((val) => val.length >= 10 && val.length <= 15, {
+      message: 'Contact number must be 10-15 digits after removing formatting symbols',
+    }),
+  safetyScore: z.coerce.number().min(0).max(100).default(100),
   userId: z.string().optional(),
 });
 

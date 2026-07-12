@@ -1,9 +1,9 @@
 const rateLimit = require('express-rate-limit');
 
-// Global rate limiter: 100 requests / 15 minutes per IP
+// Global rate limiter: 5000 requests / 15 minutes per IP
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 5000,
   message: {
     success: false,
     error: {
@@ -15,10 +15,10 @@ const globalLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Auth rate limiter: 5 requests / 1 minute per IP (brute-force protection)
+// Auth rate limiter: 200 requests / 1 minute per IP (relaxed for hackathon demo)
 const authLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 5,
+  max: 200,
   message: {
     success: false,
     error: {

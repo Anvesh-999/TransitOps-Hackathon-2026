@@ -10,9 +10,9 @@ const vehicleCreateSchema = z.object({
     .transform((val) => val.toUpperCase()),
   name: z.string().min(1, 'Vehicle name is required'),
   type: z.enum(VEHICLE_TYPES, { errorMap: () => ({ message: `Type must be one of: ${VEHICLE_TYPES.join(', ')}` }) }),
-  maxLoadCapacityKg: z.number().positive('Capacity must be greater than 0'),
-  odometerKm: z.number().min(0, 'Odometer cannot be negative').default(0),
-  acquisitionCost: z.number().min(0, 'Acquisition cost cannot be negative'),
+  maxLoadCapacityKg: z.coerce.number().positive('Capacity must be greater than 0'),
+  odometerKm: z.coerce.number().min(0, 'Odometer cannot be negative').default(0),
+  acquisitionCost: z.coerce.number().min(0, 'Acquisition cost cannot be negative'),
   region: z.string().optional(),
 });
 
