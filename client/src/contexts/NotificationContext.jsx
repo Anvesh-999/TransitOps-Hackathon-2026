@@ -35,8 +35,16 @@ export const NotificationProvider = ({ children }) => {
     setUnreadCount((prev) => Math.max(0, prev - 1));
   };
 
+  const markAllAsRead = async () => {
+    await notificationService.markAllAsRead();
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, isRead: true }))
+    );
+    setUnreadCount(0);
+  };
+
   return (
-    <NotificationContext.Provider value={{ notifications, unreadCount, markAsRead, refresh: fetchNotifications }}>
+    <NotificationContext.Provider value={{ notifications, unreadCount, markAsRead, markAllAsRead, refresh: fetchNotifications }}>
       {children}
     </NotificationContext.Provider>
   );

@@ -43,6 +43,13 @@ const markAsRead = async (notificationId) => {
 };
 
 /**
+ * Mark all notifications for a role as read.
+ */
+const markAllAsRead = async (userRole) => {
+  return Notification.updateMany({ recipientRoles: userRole, isRead: false }, { isRead: true });
+};
+
+/**
  * Check for drivers with licenses expiring within 30 days and create notifications.
  */
 const checkLicenseExpiry = async () => {
@@ -79,4 +86,4 @@ const checkLicenseExpiry = async () => {
   }
 };
 
-module.exports = { createNotification, getNotifications, markAsRead, checkLicenseExpiry };
+module.exports = { createNotification, getNotifications, markAsRead, markAllAsRead, checkLicenseExpiry };
