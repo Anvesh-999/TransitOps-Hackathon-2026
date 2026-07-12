@@ -37,9 +37,11 @@ Developed during the **Odoo Hackathon 2026**, this platform was engineered under
 
 ---
 
-### 📺 Live Demo & Deployment
+### 🚀 Live Demo & Deployment
 
-*   **Backend API (Render):** [TransitOps Backend Link](https://transitops-hackathon-2026.onrender.com/)
+You can access the live deployed application here:
+**[TransitOps Web Portal](https://transit-ops-hackathon-2026-njvkt8riy-anvesha9100-8088s-projects.vercel.app/)**
+
 
 | Light Dashboard | Dark Telemetry Console |
 | :---: | :---: |
