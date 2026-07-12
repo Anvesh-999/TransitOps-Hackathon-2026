@@ -260,13 +260,18 @@ npm run dev
 
 ---
 
-### 👥 Contributors
+## 👥 Contributors
 
-*   **Lead Architect:** [Your Name](https://github.com)
-*   **Backend Developer:** [Developer 2](https://github.com)
-*   **Frontend Designer:** [Developer 3](https://github.com)
-*   **QA Engineer:** [Developer 4](https://github.com)
+Developed collaboratively during the **Odoo Hackathon 2026**.
 
+| Contributor | GitHub Profile |
+|-------------|----------------|
+| **Anvesh Anumolu** | [![GitHub](https://img.shields.io/badge/@Anvesh--999-181717?style=for-the-badge&logo=github)](https://github.com/Anvesh-999) |
+| **Atyam S V Teja** | [![GitHub](https://img.shields.io/badge/@teja16asv-181717?style=for-the-badge&logo=github)](https://github.com/teja16asv) |
+| **Harigopichand Ponnekanti** | [![GitHub](https://img.shields.io/badge/@harigopichandponnekanti-181717?style=for-the-badge&logo=github)](https://github.com/harigopichandponnekanti) |
+| **Ajay Gopagoni** | [![GitHub](https://img.shields.io/badge/@gopagoniajay-181717?style=for-the-badge&logo=github)](https://github.com/gopagoniajay) |
+
+> **Collaboration:** This project was built collaboratively during the **Odoo Hackathon 2026**, with all team members contributing across frontend development, backend development, integration, testing, debugging, and documentation.
 ---
 
 ### 🏆 Hackathon
@@ -274,17 +279,6 @@ npm run dev
 *   **Development Duration:** 8 Hours
 *   **Team Size:** 4 Developers
 *   **Goal:** Build a production-ready enterprise fleet logistics platform with live telemetry monitoring.
-
----
-
-### 🎯 Why This Project Stands Out
-
-For recruiters and open-source maintainers, TransitOps demonstrates a comprehensive mastery of modern software engineering principles:
-
-*   **Robust Architecture:** The system adheres to strict REST principles, maintaining a clean decoupling between the client UI and controller-service database calls.
-*   **Enterprise-Ready Validation:** It goes beyond basic form field verification, enforcing database integrity checks such as chronological odometer locks and active compliance checks.
-*   **Responsive UX Design:** Built with high visual standards, featuring full dark-mode compatibility and visual GPS trackers.
-*   **Enterprise-Grade Security:** Utilizes rate-limiting, NoSQL injection sanitizers, password hashing, and clean role-based permissions filtering.
 
 ---
 
