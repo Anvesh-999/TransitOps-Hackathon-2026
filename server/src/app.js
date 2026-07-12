@@ -16,7 +16,16 @@ app.use(helmet());
 
 // 2. CORS
 app.use(cors({
-  origin: CORS_ORIGIN,
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/$/, '');
+    const cleanAllowed = CORS_ORIGIN.replace(/\/$/, '');
+    if (cleanOrigin === cleanAllowed || CORS_ORIGIN === '*') {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked: Origin ${origin} not allowed by config CORS_ORIGIN=${CORS_ORIGIN}`));
+    }
+  },
   credentials: true,
 }));
 
