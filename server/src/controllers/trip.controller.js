@@ -51,4 +51,77 @@ const cancel = async (req, res, next) => {
   } catch (error) { next(error); }
 };
 
-module.exports = { getAll, getById, create, dispatch, complete, cancel };
+const logTelemetryEvent = async (req, res, next) => {
+  try {
+    const { eventType, value, message } = req.body;
+    const tripId = req.params.id;
+    
+    const trip = await tripService.getById(tripId);
+    if (!trip) {
+      return res.status(404).json({ success: false, error: { message: 'Trip not found' } });
+    }
+    
+    const notificationService = require('../services/notification.service');
+    const activityLogService = require('../services/activityLog.service');
+    
+    const vehicleReg = trip.vehicleId?.registrationNumber || 'Vehicle';
+    const driverName = trip.driverId?.name || 'Driver';
+    
+    let alertMsg = message || `Telemetry update for ${vehicleReg}`;
+    let priority = 'Medium';
+    let type = 'trip_dispatched';
+    
+    if (eventType === 'speeding') {
+      alertMsg = `Speed Warning: ${vehicleReg} (Driver: ${driverName}) clocked at ${value} km/h (Limit: 80 km/h).`;
+      priority = 'High';
+    } else if (eventType === 'overheating') {
+      alertMsg = `Engine Coolant Alert: ${vehicleReg} temperature is at ${value}°C (Threshold: 98°C).`;
+      priority = 'High';
+      type = 'maintenance_due';
+    } else if (eventType === 'fatigue') {
+      alertMsg = `Safety Warning: Driver fatigue warning triggered for ${driverName} on route ${trip.source} to ${trip.destination}.`;
+      priority = 'High';
+    } else if (eventType === 'crash') {
+      alertMsg = `CRITICAL COLLISION INCIDENT: G-Force impact alert triggered on ${vehicleReg} (Driver: ${driverName}). Assist immediately!`;
+      priority = 'High';
+      type = 'system';
+      
+      // Update trip in database
+      trip.status = 'Cancelled';
+      trip.cancelReason = 'Collision incident event telemetry alert';
+      await trip.save();
+      
+      // Change vehicle status to In Shop
+      const Vehicle = require('../models/Vehicle.model');
+      if (trip.vehicleId) {
+        await Vehicle.findByIdAndUpdate(trip.vehicleId._id, { status: 'In Shop' });
+      }
+    }
+    
+    // Create Notification
+    await notificationService.createNotification({
+      type,
+      recipientRoles: ['Admin', 'FleetManager', 'SafetyOfficer'],
+      message: alertMsg,
+      priority,
+      relatedEntityType: 'Trip',
+      relatedEntityId: tripId,
+    });
+    
+    // Log Activity
+    await activityLogService.logActivity({
+      userId: req.user.id,
+      action: 'vehicle.statusChange',
+      entityType: 'Trip',
+      entityId: tripId,
+      previousValue: { telemetry: 'Normal' },
+      currentValue: { telemetry: eventType, value },
+    });
+    
+    res.status(200).json({ success: true, message: 'Telemetry event logged successfully', status: trip.status });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getAll, getById, create, dispatch, complete, cancel, logTelemetryEvent };

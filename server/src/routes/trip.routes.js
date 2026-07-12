@@ -13,5 +13,6 @@ router.post('/', requirePermission('trips:create'), validate(tripCreateSchema), 
 router.patch('/:id/dispatch', requirePermission('trips:update'), ctrl.dispatch);
 router.patch('/:id/complete', requirePermission('trips:update'), validate(tripCompleteSchema), ctrl.complete);
 router.patch('/:id/cancel', requirePermission('trips:update'), validate(tripCancelSchema), ctrl.cancel);
+router.post('/:id/telemetry', requirePermission('trips:update'), ctrl.logTelemetryEvent);
 
 module.exports = router;

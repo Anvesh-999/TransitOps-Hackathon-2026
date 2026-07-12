@@ -14,7 +14,7 @@ const ExpenseList = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const limit = 15;
+  const limit = 12;
 
   // Filters
   const [categoryFilter, setCategoryFilter] = useState('All');
@@ -122,67 +122,69 @@ const ExpenseList = () => {
   const totalExpenseCost = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pb-10">
       {/* Toast Notification */}
       {message && (
-        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg text-sm font-medium animate-fade-in ${
-          message.type === 'error' ? 'bg-red-600 text-white' : 'bg-green-600 text-white'
+        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-2xl shadow-xl text-sm font-semibold animate-fade-in border ${
+          message.type === 'error'
+            ? 'bg-red-650 border-red-500 text-white'
+            : 'bg-emerald-600 border-emerald-500 text-white'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Expenses</h1>
-          <p className="text-sm text-gray-500 mt-1">Log tolls, fines, insurances, parking, and miscellaneous operational costs</p>
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Operational Expenses</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Log tolls, fines, insurances, parking, and miscellaneous operational costs</p>
         </div>
         {can('expenses:create') && (
           <button
             onClick={handleOpenCreate}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-650 text-white px-4 py-2.5 rounded-xl hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all text-sm font-semibold"
           >
-            <Plus className="w-4.5 h-4.5" /> Add Expense
+            <Plus className="w-5 h-5" /> Add Expense
           </button>
         )}
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-red-600">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 bg-rose-100/10 dark:bg-rose-955/20 border border-rose-200/20 rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400">
             <Receipt className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-xs text-gray-500 uppercase font-semibold">Total Expenses (Page)</p>
-            <p className="text-2xl font-bold text-gray-900 mt-0.5">{formatCurrency(totalExpenseCost)}</p>
+            <p className="text-xs text-slate-455 dark:text-slate-450 uppercase font-semibold">Total Expenses (Page)</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">{formatCurrency(totalExpenseCost)}</p>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 bg-indigo-100/10 dark:bg-indigo-950/40 border border-indigo-200/20 rounded-xl flex items-center justify-center text-indigo-650 dark:text-indigo-400">
             <span className="text-lg font-bold">🛒</span>
           </div>
           <div>
-            <p className="text-xs text-gray-500 uppercase font-semibold">Active Logged Items</p>
-            <p className="text-2xl font-bold text-gray-900 mt-0.5">{total} Records</p>
+            <p className="text-xs text-slate-455 dark:text-slate-450 uppercase font-semibold">Active Logged Items</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">{total} Records</p>
           </div>
         </div>
       </div>
 
       {/* Search & Filters */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 space-y-4">
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
+        <div className="flex flex-col xl:flex-row gap-4 justify-between items-center">
           {/* Category Tabs */}
-          <div className="flex bg-gray-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
+          <div className="flex bg-slate-100 dark:bg-slate-950 p-1 rounded-xl w-full xl:w-auto overflow-x-auto border border-slate-200/10">
             {['All', ...EXPENSE_CATEGORIES].map((category) => (
               <button
                 key={category}
                 onClick={() => { setCategoryFilter(category); setPage(1); }}
                 className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                   categoryFilter === category
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                 }`}
               >
                 {category}
@@ -191,11 +193,11 @@ const ExpenseList = () => {
           </div>
 
           {/* Vehicle Dropdown Filter */}
-          <div className="flex w-full md:w-auto gap-3 items-center">
+          <div className="flex w-full xl:w-auto gap-3 items-center">
             <select
               value={vehicleFilter}
               onChange={(e) => { setVehicleFilter(e.target.value); setPage(1); }}
-              className="px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white w-full md:w-48"
+              className="w-full px-3 py-2 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-850 dark:text-slate-250 bg-white"
             >
               <option value="All">All Vehicles</option>
               {expenses.map((exp) => exp.vehicleId).filter((v, idx, self) => v && self.findIndex(t => t._id === v._id) === idx).map((v) => (
@@ -207,56 +209,60 @@ const ExpenseList = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        {loading ? (
-          <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div></div>
-        ) : expenses.length === 0 ? (
-          <div className="text-center py-20">
-            <Receipt className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-lg font-medium text-gray-600">No expenses found</p>
-            <p className="text-sm text-gray-400 mt-1">Try adjusting your filters</p>
-          </div>
-        ) : (
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Vehicle</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Notes / Description</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {expenses.map((e) => (
-                <tr key={e._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-semibold text-gray-900">{e.vehicleId?.registrationNumber || '—'}</div>
-                    <div className="text-xs text-gray-500">{e.vehicleId?.name || '—'}</div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-medium">{e.category}</span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate" title={e.notes}>{e.notes || '—'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 font-bold">{formatCurrency(e.amount)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{formatDate(e.date)}</td>
-                  <td className="px-6 py-4 text-right">
-                    {can('expenses:delete') && (
-                      <button
-                        onClick={() => setShowDeleteDialog(e)}
-                        className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"
-                        title="Delete Expense"
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </button>
-                    )}
-                  </td>
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="overflow-x-auto">
+          {loading ? (
+            <div className="flex justify-center py-32">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+            </div>
+          ) : expenses.length === 0 ? (
+            <div className="text-center py-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+              <Receipt className="w-16 h-16 text-slate-350 dark:text-slate-700 mx-auto mb-4" />
+              <p className="text-lg font-bold text-slate-750 dark:text-slate-350">No expenses found</p>
+              <p className="text-sm text-slate-450 dark:text-slate-500 mt-1">Try adjusting your filters</p>
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-850">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Vehicle</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Category</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Notes / Description</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-right text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-850">
+                {expenses.map((e) => (
+                  <tr key={e._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-900 dark:text-white">{e.vehicleId?.registrationNumber || '—'}</div>
+                      <div className="text-xs text-slate-550 dark:text-slate-455 mt-0.5">{e.vehicleId?.name || '—'}</div>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-350 rounded text-xs font-semibold">{e.category}</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-400 max-w-xs truncate" title={e.notes}>{e.notes || '—'}</td>
+                    <td className="px-6 py-4 text-sm text-slate-900 dark:text-white font-bold">{formatCurrency(e.amount)}</td>
+                    <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 font-medium">{formatDate(e.date)}</td>
+                    <td className="px-6 py-4 text-right">
+                      {can('expenses:delete') && (
+                        <button
+                          onClick={() => setShowDeleteDialog(e)}
+                          className="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-955/20 text-rose-600 transition-colors"
+                          title="Delete Expense"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
 
       <Pagination page={page} total={total} limit={limit} onPageChange={setPage} />
@@ -265,16 +271,16 @@ const ExpenseList = () => {
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Log Fleet Expense" maxWidth="max-w-md">
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Select Vehicle</label>
+            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Select Vehicle</label>
             <select
               required
               value={form.vehicleId}
               onChange={(e) => setForm({ ...form, vehicleId: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
+              className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
             >
-              <option value="">Choose a vehicle...</option>
+              <option value="" className="bg-white dark:bg-slate-900">Choose a vehicle...</option>
               {vehicles.map((v) => (
-                <option key={v._id} value={v._id}>
+                <option key={v._id} value={v._id} className="bg-white dark:bg-slate-900">
                   {v.registrationNumber} — {v.name}
                 </option>
               ))}
@@ -282,17 +288,17 @@ const ExpenseList = () => {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Category</label>
               <select
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
+                className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               >
-                {EXPENSE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                {EXPENSE_CATEGORIES.map((c) => <option key={c} value={c} className="bg-white dark:bg-slate-900">{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Expense Amount (INR)</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Expense Amount (INR)</label>
               <input
                 type="number"
                 required
@@ -300,40 +306,40 @@ const ExpenseList = () => {
                 placeholder="e.g. 500"
                 value={form.amount}
                 onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Expense Date</label>
+            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Expense Date</label>
             <input
               type="date"
               required
               value={form.date}
               onChange={(e) => setForm({ ...form, date: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Notes / Receipt details</label>
+            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Notes / Receipt details</label>
             <textarea
               rows="3"
               placeholder="e.g. Toll receipt #1234 Pune-Mumbai express route..."
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
+              className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
             ></textarea>
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200">Cancel</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-medium hover:shadow-lg disabled:opacity-50">
+            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-semibold transition-colors">Cancel</button>
+            <button type="submit" disabled={saving} className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-650 text-white rounded-xl text-sm font-semibold hover:shadow-lg disabled:opacity-50 transition-all">
               {saving ? 'Logging...' : 'Log Expense'}
             </button>
           </div>
         </form>
       </Modal>
 
-      {/* Delete Dialog */}
+      {/* Delete Confirmation */}
       <ConfirmDialog
         isOpen={!!showDeleteDialog}
         onCancel={() => setShowDeleteDialog(null)}

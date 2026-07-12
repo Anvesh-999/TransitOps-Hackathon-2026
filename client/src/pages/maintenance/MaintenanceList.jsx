@@ -14,7 +14,7 @@ const MaintenanceList = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const limit = 15;
+  const limit = 12; // Standardised page limits
 
   // Filters
   const [statusFilter, setStatusFilter] = useState('All');
@@ -53,9 +53,7 @@ const MaintenanceList = () => {
 
   const fetchVehicles = async () => {
     try {
-      // Fetch vehicles to let users select one (Available or On Trip can go to Shop)
       const res = await vehicleService.getAll({ limit: 100 });
-      // Exclude retired vehicles
       setVehicles(res.data.data.filter((v) => v.status !== 'Retired'));
     } catch (err) {
       console.error(err);
@@ -117,43 +115,46 @@ const MaintenanceList = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pb-10">
       {/* Toast Notification */}
       {message && (
-        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg text-sm font-medium animate-fade-in ${
-          message.type === 'error' ? 'bg-red-600 text-white' : 'bg-green-600 text-white'
+        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-2xl shadow-xl text-sm font-semibold animate-fade-in border ${
+          message.type === 'error'
+            ? 'bg-red-650 border-red-500 text-white'
+            : 'bg-emerald-600 border-emerald-500 text-white'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Maintenance</h1>
-          <p className="text-sm text-gray-500 mt-1">Schedule service, track vehicle repair logs, and close open work orders</p>
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Maintenance Logs</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Schedule service, track vehicle repair logs, and close open work orders</p>
         </div>
         {can('maintenance:create') && (
           <button
             onClick={handleOpenCreate}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-650 text-white px-4 py-2.5 rounded-xl hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] transition-all text-sm font-semibold"
           >
-            <Plus className="w-4.5 h-4.5" /> New Record
+            <Plus className="w-5 h-5" /> New Record
           </button>
         )}
       </div>
 
       {/* Search & Filters */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
-        <div className="flex bg-gray-100 p-1 rounded-xl w-fit">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row gap-4 justify-between items-center">
+        {/* Status tabs */}
+        <div className="flex bg-slate-100 dark:bg-slate-950 p-1 rounded-xl w-full md:w-auto overflow-x-auto border border-slate-200/10">
           {['All', 'Open', 'Closed'].map((status) => (
             <button
               key={status}
               onClick={() => { setStatusFilter(status); setPage(1); }}
               className={`px-5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 statusFilter === status
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
               {status}
@@ -163,64 +164,71 @@ const MaintenanceList = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        {loading ? (
-          <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div></div>
-        ) : records.length === 0 ? (
-          <div className="text-center py-20">
-            <Wrench className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-lg font-medium text-gray-600">No records found</p>
-            <p className="text-sm text-gray-400 mt-1">Try adjusting your filters</p>
-          </div>
-        ) : (
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Vehicle</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Estimated Cost</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Start Date</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Expected End</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {records.map((r) => (
-                <tr key={r._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-semibold text-gray-900">{r.vehicleId?.registrationNumber || '—'}</div>
-                    <div className="text-xs text-gray-500">{r.vehicleId?.name || '—'}</div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-medium">{r.type}</span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate" title={r.description}>{r.description}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 font-medium">{formatCurrency(r.cost)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{formatDate(r.startDate)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{formatDate(r.expectedEndDate)}</td>
-                  <td className="px-6 py-4 text-sm">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[r.status]}`}>{r.status}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-end gap-1.5">
-                      {r.status === 'Open' && can('maintenance:update') && (
-                        <button
-                          onClick={() => setShowCloseDialog(r)}
-                          className="flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-50 hover:bg-green-100 px-2.5 py-1.5 rounded-lg transition-colors"
-                          title="Complete & Close"
-                        >
-                          <Check className="w-3.5 h-3.5" /> Close
-                        </button>
-                      )}
-                    </div>
-                  </td>
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="overflow-x-auto">
+          {loading ? (
+            <div className="flex justify-center py-32">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+            </div>
+          ) : records.length === 0 ? (
+            <div className="text-center py-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+              <Wrench className="w-16 h-16 text-slate-350 dark:text-slate-700 mx-auto mb-4" />
+              <p className="text-lg font-bold text-slate-750 dark:text-slate-350">No records found</p>
+              <p className="text-sm text-slate-450 dark:text-slate-550 mt-1">Maintenance logs will appear here upon logging</p>
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-850">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Vehicle</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Description</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Estimated Cost</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Start Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Expected End</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-right text-xs font-bold text-slate-500 dark:text-slate-455 uppercase tracking-wider">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-850">
+                {records.map((r) => (
+                  <tr key={r._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-900 dark:text-white">{r.vehicleId?.registrationNumber || '—'}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-450 mt-0.5">{r.vehicleId?.name || '—'}</div>
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-350 rounded text-xs font-semibold">{r.type}</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-750 dark:text-slate-355 max-w-xs truncate" title={r.description}>{r.description}</td>
+                    <td className="px-6 py-4 text-sm text-slate-900 dark:text-white font-bold">{formatCurrency(r.cost)}</td>
+                    <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 font-medium">{formatDate(r.startDate)}</td>
+                    <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 font-medium">{formatDate(r.expectedEndDate)}</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                        r.status === 'Open' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400' :
+                        'bg-green-100 text-green-800 dark:bg-green-950/30 dark:text-green-400'
+                      }`}>{r.status}</span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-1.5">
+                        {r.status === 'Open' && can('maintenance:update') && (
+                          <button
+                            onClick={() => setShowCloseDialog(r)}
+                            className="flex items-center gap-1 text-xs font-bold text-green-600 bg-green-50 dark:bg-green-955/20 hover:bg-green-100 px-3 py-1.5 rounded-xl border border-green-250/10 transition-colors"
+                            title="Complete & Close"
+                          >
+                            <Check className="w-3.5 h-3.5" /> Close
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
 
       <Pagination page={page} total={total} limit={limit} onPageChange={setPage} />
@@ -229,16 +237,16 @@ const MaintenanceList = () => {
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="New Maintenance Work Order" maxWidth="max-w-md">
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Select Vehicle</label>
+            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Select Vehicle</label>
             <select
               required
               value={form.vehicleId}
               onChange={(e) => setForm({ ...form, vehicleId: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
+              className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
             >
-              <option value="">Choose a vehicle...</option>
+              <option value="" className="bg-white dark:bg-slate-900">Choose a vehicle...</option>
               {vehicles.map((v) => (
-                <option key={v._id} value={v._id}>
+                <option key={v._id} value={v._id} className="bg-white dark:bg-slate-900">
                   {v.registrationNumber} — {v.name} ({v.status})
                 </option>
               ))}
@@ -246,17 +254,17 @@ const MaintenanceList = () => {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Type</label>
               <select
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white"
+                className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               >
-                {MAINTENANCE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                {MAINTENANCE_TYPES.map((t) => <option key={t} value={t} className="bg-white dark:bg-slate-900">{t}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Cost (INR)</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Estimated Cost (INR)</label>
               <input
                 type="number"
                 required
@@ -264,53 +272,53 @@ const MaintenanceList = () => {
                 placeholder="Estimated cost"
                 value={form.cost}
                 onChange={(e) => setForm({ ...form, cost: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Start Date</label>
               <input
                 type="date"
                 required
                 value={form.startDate}
                 onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Expected End Date</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Expected End Date</label>
               <input
                 type="date"
                 required
                 value={form.expectedEndDate}
                 onChange={(e) => setForm({ ...form, expectedEndDate: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description / Notes</label>
+            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase mb-1">Description / Notes</label>
             <textarea
               required
               rows="3"
               placeholder="Provide details about the issue or required service..."
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
+              className="w-full px-4 py-2.5 bg-slate-55 dark:bg-slate-955/60 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none"
             ></textarea>
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200">Cancel</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-medium hover:shadow-lg disabled:opacity-50">
+            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-semibold transition-colors">Cancel</button>
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-650 text-white rounded-xl text-sm font-semibold hover:shadow-lg disabled:opacity-50 transition-all">
               {saving ? 'Creating...' : 'Create Order'}
             </button>
           </div>
         </form>
       </Modal>
 
-      {/* Close Maintenance Dialog */}
+      {/* Close Maintenance Confirmation */}
       <ConfirmDialog
         isOpen={!!showCloseDialog}
         onCancel={() => setShowCloseDialog(null)}
