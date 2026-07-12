@@ -6,7 +6,6 @@ const activityLogSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
-    index: true,
   },
   action: {
     type: String,
@@ -20,7 +19,6 @@ const activityLogSchema = new mongoose.Schema({
   entityId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    index: true,
   },
   previousValue: {
     type: mongoose.Schema.Types.Mixed,
@@ -31,7 +29,6 @@ const activityLogSchema = new mongoose.Schema({
   timestamp: {
     type: Date,
     default: Date.now,
-    index: true,
   },
 });
 

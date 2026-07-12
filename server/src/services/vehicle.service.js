@@ -9,6 +9,12 @@ const getAll = async (filters = {}, page = 1, limit = 20) => {
   if (filters.status) query.status = filters.status;
   if (filters.type) query.type = filters.type;
   if (filters.region) query.region = filters.region;
+  if (filters.search) {
+    query.$or = [
+      { registrationNumber: { $regex: filters.search, $options: 'i' } },
+      { name: { $regex: filters.search, $options: 'i' } },
+    ];
+  }
 
   const skip = (page - 1) * limit;
   const [data, total] = await Promise.all([

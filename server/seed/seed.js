@@ -49,13 +49,12 @@ const seed = async () => {
   roles.forEach((r) => { roleMap[r.name] = r._id; });
 
   // ── Users ──
-  const passwordHash = await bcrypt.hash('Admin@123', 10);
   const users = await User.create([
-    { name: 'System Admin', email: 'admin@transitops.com', passwordHash, role: roleMap['Admin'] },
-    { name: 'Rajesh Kumar', email: 'rajesh@transitops.com', passwordHash: await bcrypt.hash('Fleet@123', 10), role: roleMap['FleetManager'] },
-    { name: 'Alex Menon', email: 'alex@transitops.com', passwordHash: await bcrypt.hash('Driver@123', 10), role: roleMap['Driver'] },
-    { name: 'Priya Sharma', email: 'priya@transitops.com', passwordHash: await bcrypt.hash('Safety@123', 10), role: roleMap['SafetyOfficer'] },
-    { name: 'Meera Iyer', email: 'meera@transitops.com', passwordHash: await bcrypt.hash('Finance@123', 10), role: roleMap['FinancialAnalyst'] },
+    { name: 'System Admin', email: 'admin@transitops.com', passwordHash: 'Admin@123', role: roleMap['Admin'] },
+    { name: 'Rajesh Kumar', email: 'rajesh@transitops.com', passwordHash: 'Fleet@123', role: roleMap['FleetManager'] },
+    { name: 'Alex Menon', email: 'alex@transitops.com', passwordHash: 'Driver@123', role: roleMap['Driver'] },
+    { name: 'Priya Sharma', email: 'priya@transitops.com', passwordHash: 'Safety@123', role: roleMap['SafetyOfficer'] },
+    { name: 'Meera Iyer', email: 'meera@transitops.com', passwordHash: 'Finance@123', role: roleMap['FinancialAnalyst'] },
   ]);
   console.log('✅ Users seeded');
 

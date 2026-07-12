@@ -6,9 +6,9 @@ export const reportService = {
 };
 
 export const dashboardService = {
-  getKpis: () => api.get('/dashboard/kpis'),
-  getCharts: () => api.get('/dashboard/charts'),
-  getRecentActivity: () => api.get('/dashboard/recent-activity'),
+  getKpis: (params) => api.get('/dashboard/kpis', { params }),
+  getCharts: (params) => api.get('/dashboard/charts', { params }),
+  getRecentActivity: (params) => api.get('/dashboard/recent-activity', { params }),
 };
 
 export const notificationService = {

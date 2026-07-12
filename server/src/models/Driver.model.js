@@ -38,7 +38,6 @@ const driverSchema = new mongoose.Schema(
       type: String,
       enum: DRIVER_STATUSES,
       default: 'Available',
-      index: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -48,7 +47,6 @@ const driverSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-driverSchema.index({ licenseNumber: 1 }, { unique: true });
 driverSchema.index({ status: 1 });
 driverSchema.index({ licenseExpiryDate: 1 });
 

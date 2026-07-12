@@ -7,7 +7,6 @@ const expenseSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Vehicle',
       required: [true, 'Vehicle is required'],
-      index: true,
     },
     category: {
       type: String,

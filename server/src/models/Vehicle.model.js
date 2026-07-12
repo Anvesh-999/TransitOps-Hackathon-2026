@@ -40,7 +40,6 @@ const vehicleSchema = new mongoose.Schema(
       type: String,
       enum: VEHICLE_STATUSES,
       default: 'Available',
-      index: true,
     },
     region: {
       type: String,
@@ -50,7 +49,6 @@ const vehicleSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-vehicleSchema.index({ registrationNumber: 1 }, { unique: true });
 vehicleSchema.index({ status: 1, type: 1 });
 
 vehicleSchema.set('toJSON', {

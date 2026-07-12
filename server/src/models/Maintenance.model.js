@@ -7,7 +7,6 @@ const maintenanceSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Vehicle',
       required: [true, 'Vehicle is required'],
-      index: true,
     },
     type: {
       type: String,
@@ -39,7 +38,6 @@ const maintenanceSchema = new mongoose.Schema(
       type: String,
       enum: MAINTENANCE_STATUSES,
       default: 'Open',
-      index: true,
     },
   },
   { timestamps: true }

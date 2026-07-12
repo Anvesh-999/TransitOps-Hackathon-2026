@@ -11,6 +11,10 @@ router.use(authenticate);
 router.get('/users', requireRole('Admin'), ctrl.getUsers);
 router.post('/users', requireRole('Admin'), validate(userCreateSchema), ctrl.createUser);
 router.put('/users/:id', requireRole('Admin'), validate(userUpdateSchema), ctrl.updateUser);
+router.patch('/users/:id/reset-password', requireRole('Admin'), ctrl.resetPassword);
+
+// Roles (Admin only — for dropdowns)
+router.get('/roles', requireRole('Admin'), ctrl.getRoles);
 
 // Activity Logs (Admin + FleetManager)
 router.get('/activity-logs', requireRole('Admin', 'FleetManager'), ctrl.getActivityLogs);

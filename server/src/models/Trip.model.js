@@ -17,13 +17,11 @@ const tripSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Vehicle',
       required: [true, 'Vehicle is required'],
-      index: true,
     },
     driverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Driver',
       required: [true, 'Driver is required'],
-      index: true,
     },
     cargoWeightKg: {
       type: Number,
@@ -52,7 +50,6 @@ const tripSchema = new mongoose.Schema(
       type: String,
       enum: TRIP_STATUSES,
       default: 'Draft',
-      index: true,
     },
     dispatchedAt: Date,
     completedAt: Date,
