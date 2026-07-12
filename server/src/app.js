@@ -41,6 +41,11 @@ app.use((req, res, next) => {
 // 6. Route mounting
 app.use('/api/v1', routes);
 
+// Welcome page
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to TransitOps API Service', status: 'active', version: '1.0.0' });
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
