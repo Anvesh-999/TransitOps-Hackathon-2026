@@ -19,11 +19,24 @@ app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     const cleanOrigin = origin.replace(/\/$/, '');
-    const cleanAllowed = CORS_ORIGIN.replace(/\/$/, '');
-    if (cleanOrigin === cleanAllowed || CORS_ORIGIN === '*') {
+    
+    // Support comma-separated origins in env
+    const allowedOrigins = CORS_ORIGIN
+      ? CORS_ORIGIN.split(',').map(o => o.trim().replace(/\/$/, ''))
+      : [];
+    
+    const isAllowed =
+      allowedOrigins.includes(cleanOrigin) ||
+      allowedOrigins.includes('*') ||
+      cleanOrigin.includes('localhost') ||
+      cleanOrigin.includes('127.0.0.1') ||
+      cleanOrigin.endsWith('.vercel.app') ||
+      cleanOrigin.endsWith('.render.com');
+
+    if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error(`CORS blocked: Origin ${origin} not allowed by config CORS_ORIGIN=${CORS_ORIGIN}`));
+      callback(null, false);
     }
   },
   credentials: true,
