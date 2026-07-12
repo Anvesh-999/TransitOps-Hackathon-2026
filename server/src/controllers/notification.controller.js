@@ -16,4 +16,11 @@ const markAsRead = async (req, res, next) => {
   } catch (error) { next(error); }
 };
 
-module.exports = { getAll, markAsRead };
+const markAllAsRead = async (req, res, next) => {
+  try {
+    await notificationService.markAllAsRead(req.user.role);
+    sendSuccess(res, null, 200, 'All notifications marked as read');
+  } catch (error) { next(error); }
+};
+
+module.exports = { getAll, markAsRead, markAllAsRead };
